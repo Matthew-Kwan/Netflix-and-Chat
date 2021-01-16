@@ -1,6 +1,9 @@
 from django.http.response import Http404
+from django.http import JsonResponse, HttpResponse
+from django.core import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
+# from rest_framework import generics
 from .models import Show, Message
 from .serializers import ShowSerializer, MessageSerializer
 
@@ -17,10 +20,10 @@ class ShowIdentifier(APIView):
     print("PK:", pk)
 
     try:
-      show = ShowSerializer(Show.objects.get(unique_id=pk))
-      print("SHOW: ", show)
-      return Response(show.data, status=200)
-      # return Response(show, status=200)
+      show = Show.objects.get(unique_id=pk)
+      messages = show.message_set.all()
+      data = serializers.serialize('json', messages)
+      return HttpResponse(data, status=200)
 
     except Show.DoesNotExist:
       raise Http404

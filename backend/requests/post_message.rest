@@ -2,7 +2,7 @@ POST http://localhost:8000/api/messages/
 Content-Type: application/json
 
 {
-  "content": "Wow this show is so cool",
-  "time": 300.50,
+  "content": "yo high-key unexpected",
+  "time": 400.50,
   "unique_id": 10000
 }
