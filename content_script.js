@@ -120,7 +120,10 @@
     // video duration in milliseconds
     var lastDuration = 60 * 60 * 1000;
     var getDuration = function() {
-      var timer = jQuery('video')[0].currentTime
+      return jQuery('video')[0].currentTime
+    };
+
+    var getDurationFormat = function(timer){
       var hours = Math.floor(timer / 60 / 60)
       timer -= hours * 60 * 60
       var minutes = Math.floor(timer / 60)
@@ -128,7 +131,7 @@
       var seconds = Math.floor(timer)
 
       return [hours, minutes, seconds]
-    };
+    }
 
     // 'playing', 'paused', 'loading', or 'idle'
     var getState = function() {
@@ -553,7 +556,10 @@
 
         // receive messages from the server
         socket.on('sendMessage', function(data) {
-          addMessage(data);
+          // this is only for one person, so you sent this message
+          var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          var timer = getDuration()
+          addMessage([timer, messageDetails]);
         });
 
         // receive presence updates from the server
@@ -596,12 +602,20 @@
     // add a message to the chat history
     var addMessage = function(message) {
       messages.push(message);
-      var timer = getDuration()
+      var seconds = message[0]
+      var details = message[1]
+      var timer = getDurationFormat(seconds)
+
       jQuery('#chat-history').append(`
         <div class="chat-message${ message.isSystemMessage ? ' system-message' : '' }">
+<<<<<<< HEAD
         <div class="chat-message-sender">Hello </div>
         
           <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + message.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div> 
+=======
+          <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
+          <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
+>>>>>>> 05156464077594598575ad21ff95dac57d1424cf
         </div> 
       `);
       jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
@@ -938,5 +952,27 @@
         }
       }
     );
+    
+    var dataBase = [
+      [180, "We are 3 MINUTES IN BABY"],
+      [600, "We are 10 MINUTES IN WOOOHOOO"],
+      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
+    ]
+
+    var lastTold = 0
+    var lastChecked = -1
+    setInterval(() => {
+      if (sessionId !== null){
+        var timer = getDuration()
+        for (var i = lastTold; i < dataBase.length; i++){
+          var textData = dataBase[i];
+          if (textData[0] > timer){
+            lastTold = i;
+            break;
+          }
+          addMessage(textData);
+        }
+      }
+    }, 300);
   }
 })();
