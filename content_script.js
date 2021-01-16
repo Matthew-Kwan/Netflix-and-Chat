@@ -107,6 +107,29 @@
         throw e;
       });
     };
+    
+    // Connecting to DB variables
+    var collectedData = [
+      [180, "We are 3 MINUTES IN BABY"],
+      [600, "We are 10 MINUTES IN WOOOHOOO"],
+      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
+    ]
+    var DBPointer = 0;
+
+    /*
+        if (first && videoId !== null){
+          var element = document.getElementsByClassName("ellipsize-text")[0];
+          if (element.getElementsByTagName('h4').length > 0){
+            var title = element.getElementsByTagName('h4')[0].innerHTML;
+            var ep = element.getElementsByTagName('span')[0].innerHTML;
+            addMessage([timer, title + ", " + ep + " unique ID " + videoId.toString()]);
+          }else{ // movie
+            addMessage([timer, element.innerHTML + " unique ID " + videoId.toString()]);
+          }
+          first = false;
+        }
+
+    */
 
     //////////////////////////////////////////////////////////////////////////
     // Netflix API                                                          //
@@ -120,7 +143,10 @@
     // video duration in milliseconds
     var lastDuration = 60 * 60 * 1000;
     var getDuration = function() {
-      return jQuery('video')[0].currentTime
+      if (jQuery('video').length > 0){
+        return jQuery('video')[0].currentTime
+      }
+      return -1
     };
 
     var getDurationFormat = function(timer){
@@ -476,7 +502,8 @@
         </div>
       </div>
     `;
-
+    
+      
     // this is used for the chat presence feature
     var typingTimer = null;
 
@@ -536,9 +563,12 @@
         // receive messages from the server
         socket.on('sendMessage', function(data) {
           // this is only for one person, so you sent this message
-          var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-          var timer = getDuration()
-          addMessage([timer, messageDetails]);
+          var timer = getDuration();
+          var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          var message = [timer, messageDetails];
+          collectedData.insert(message, DBPointer);
+          addMessage(message);
+          DBPointer++;
         });
 
         // receive presence updates from the server
@@ -577,6 +607,8 @@
         jQuery('#presence-indicator').hide();
       }
     };
+    
+    
 
     // add a message to the chat history
     var addMessage = function(message) {
@@ -584,19 +616,43 @@
       var seconds = message[0]
       var details = message[1]
       var timer = getDurationFormat(seconds)
+      var finalized = `
+      <div class="chat-message${''}">
+      <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
+        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
+      </div> 
+      `;
 
-      jQuery('#chat-history').append(`
-        <div class="chat-message${ message.isSystemMessage ? ' system-message' : '' }">
-          <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
-          <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
-        </div> 
-      `);
+      jQuery('#chat-history').append(finalized);
       jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
       unreadCount += 1;
       if (!document.hasFocus()) {
         document.title = '(' + String(unreadCount) + ') ' + originalTitle;
       }
+
+      
     };
+
+    var removeMessage = function(message){
+      var seconds = message[0];
+      var details = message[1];
+      var timer = getDurationFormat(seconds);
+      var specificMessage = '[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details;
+
+      var history = document.getElementById("chat-history").getElementsByClassName("chat-message");
+      for (var i = history.length - 1; i > -1; i--){
+        var message = history[i].getElementsByClassName('chat-message-body')[0].innerHTML;
+        if (message === specificMessage){
+          history[i].remove()
+          break;
+        }
+      }
+
+      jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
+      if (!document.hasFocus()) {
+        document.title = '(' + String(unreadCount) + ') ' + originalTitle;
+      }
+    }
 
     // clear the unread count
     var clearUnreadCount = function() {
@@ -911,6 +967,8 @@
             sessionId = null;
             setChatVisible(false);
             sendResponse({});
+            DBPointer = 0;
+            lastChecked = -1;
           });
           return true;
         }
@@ -926,25 +984,38 @@
       }
     );
     
-    var dataBase = [
-      [180, "We are 3 MINUTES IN BABY"],
-      [600, "We are 10 MINUTES IN WOOOHOOO"],
-      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
-    ]
 
-    var lastTold = 0
-    var lastChecked = -1
+    var lastChecked = -1;
     setInterval(() => {
-      if (sessionId !== null){
+      if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
-        for (var i = lastTold; i < dataBase.length; i++){
-          var textData = dataBase[i];
-          if (textData[0] > timer){
-            lastTold = i;
-            break;
+
+        if (timer > lastChecked){ // add new messages
+          for (var i = DBPointer; i < collectedData.length; i++){
+            var textData = collectedData[i];
+            if (textData[0] > timer){ // not ready to post yet
+              DBPointer = i;
+              break;
+            }
+            addMessage(textData);
           }
-          addMessage(textData);
+
+        }else if (timer < lastChecked) { // remove non wanted messages
+          for (var i = DBPointer - 1; i > -1; i--){
+            var textData = collectedData[i];
+            if (textData[0] < timer){ // too far back, don't delete this message
+              DBPointer = i + 1;
+              break;
+
+            }else if (i == 0){
+              DBPointer = 0;
+            }
+
+            removeMessage(textData);
+          }
         }
+        
+        lastChecked = timer;
       }
     }, 300);
   }
