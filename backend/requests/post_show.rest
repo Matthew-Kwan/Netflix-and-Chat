@@ -1,0 +1,7 @@
+POST http://localhost:8000/api/shows/
+Content-Type: application/json
+
+{
+  "unique_id": 10000,
+  "description": "The Office S3:E4"
+}
