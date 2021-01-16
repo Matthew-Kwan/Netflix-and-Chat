@@ -120,11 +120,14 @@
     // video duration in milliseconds
     var lastDuration = 60 * 60 * 1000;
     var getDuration = function() {
-      var video = jQuery('.player-video-wrapper video');
-      if (video.length > 0) {
-        lastDuration = Math.floor(video[0].duration * 1000);
-      }
-      return lastDuration;
+      var timer = jQuery('video')[0].currentTime
+      var hours = Math.floor(timer / 60 / 60)
+      timer -= hours * 60 * 60
+      var minutes = Math.floor(timer / 60)
+      timer -= minutes * 60
+      var seconds = Math.floor(timer)
+
+      return [hours, minutes, seconds]
     };
 
     // 'playing', 'paused', 'loading', or 'idle'
@@ -572,11 +575,12 @@
     // add a message to the chat history
     var addMessage = function(message) {
       messages.push(message);
+      var timer = getDuration()
       jQuery('#chat-history').append(`
         <div class="chat-message${ message.isSystemMessage ? ' system-message' : '' }">
           <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(message.userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
-          <div class="chat-message-body">${message.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-        </div>
+          <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + message.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div> 
+        </div> 
       `);
       jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
       unreadCount += 1;
