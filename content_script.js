@@ -107,6 +107,11 @@
         throw e;
       });
     };
+
+    // database
+    Array.prototype.insert = function ( index, item ) {
+      this.splice( index, 0, item );
+    };
     
     // Connecting to DB variables
     var collectedData = [
@@ -114,8 +119,8 @@
       [600, "We are 10 MINUTES IN WOOOHOOO"],
       [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
     ]
-    var DBPointer = 0;
 
+    var DBPointer = 0;
     /*
         if (first && videoId !== null){
           var element = document.getElementsByClassName("ellipsize-text")[0];
@@ -129,7 +134,7 @@
           first = false;
         }
 
-    */
+        */
 
     //////////////////////////////////////////////////////////////////////////
     // Netflix API                                                          //
