@@ -122,11 +122,11 @@
     };
 
     var badHashing = function(unique_str){
-      var newString = "";
+      var total = 0;
       for (var i = 0; i < unique_str.length; i ++){
-        newString += unique_str.charAt(i);
+        total += unique_str.charCodeAt(i);
       }
-      return parseInt(newString);
+      return total;
     }
     
     // Connecting to DB variables
