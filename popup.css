@@ -6,7 +6,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  width: 332px;
+  width: 300px;
   font-family: "Nunito",sans-serif;
   font-size: 0.9em;
   color: rgb(192, 192, 192);
@@ -22,7 +22,7 @@ label {
 input[type="text"] {
   display: block;
   box-sizing: border-box;
-  width: 300px;
+  width: 260px;
   height: 40px;
   border: 1px solid rgb(51, 52, 63);
 
@@ -68,6 +68,8 @@ button {
   display: inline-block;
   vertical-align: middle;
   font-weight: 400;
+  width: 260px;
+
   font-size: 0.9em;
   -webkit-border-radius: 5px;
   -moz-border-radius:    5px;
