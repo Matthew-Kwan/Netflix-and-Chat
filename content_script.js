@@ -114,7 +114,7 @@
     };
     
     // Connecting to DB variables
-    var url = "localhost"
+    var url = "http://localhost:8000/"
     var collectedData = []
     var DBPointer = 0;
     var first = true;
@@ -557,6 +557,13 @@
           //collectedData.insert(message, DBPointer);
           addMessage(message);
           //DBPointer++;
+          let messageObject = {
+            "content": messageDetails,
+            "time": timer,
+            "unique_id": videoId
+          }
+          postMessage(messageObject)
+
         });
 
         // receive presence updates from the server
@@ -567,6 +574,16 @@
         jQuery('#chat-history').html('');
       }
     };
+
+    const postMessage = async (data) => {
+      const response = await fetch(`${url}api/messages/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+    }
 
     // query whether the chat sidebar is visible
     var getChatVisible = function() {
@@ -605,8 +622,8 @@
       var finalized = `
       <div class="chat-message${''}">
       <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
-        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
-      </div> 
+        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div>
+      </div>
       `;
 
       jQuery('#chat-history').append(finalized);
@@ -615,8 +632,6 @@
       if (!document.hasFocus()) {
         document.title = '(' + String(unreadCount) + ') ' + originalTitle;
       }
-
-      
     };
 
     var removeMessage = function(message){
@@ -970,13 +985,47 @@
         }
       }
     );
-    
 
     var lastChecked = -1;
+
+    const postShow = async (data) => {
+      const response = await fetch(`${url}api/shows/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+    }
+
+    const getShow = async (ID) => {
+
+      let data
+
+      try {
+        const response = await fetch(`${url}api/shows/${ID}`)
+        data =  await response.json()
+        if(data.detail) {
+          throw('no data')
+        }
+      } catch (err) {
+          return "err"
+      }
+
+      if (data) { // if HTTP-status is 200-299
+        for (var i = 0; data.length; i++) {
+          collectedData.push([data[i].fields.time, data[i].fields.content])
+        }
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+      return data
+    }
+
     setInterval(() => {
       if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
-        
+
         if (first && videoId !== null){ // get request here
           var element = document.getElementsByClassName("ellipsize-text")[0];
           var description;
@@ -988,21 +1037,16 @@
             description =  element.innerHTML;
           }
 
-          var ID = videoId.toString();
-          let response = await fetch(url + "/api/shows/" + ID);
-
-          if (response.ok) { // if HTTP-status is 200-299
-            // get the response body (the method explained below)
-            let json = await response.json();
-            var item = json[i][''];
-            
-            for (var i = 0; json.length; i++){
-              collectedData.push([])
+          var ID = videoId;
+          getShow(ID).then(data => {
+            if(data === "err") {
+              newShow = {
+                "unique_id": ID,
+                "description": description
+              }
+              postShow(newShow)
             }
-          } else {
-            alert("HTTP-Error: " + response.status);
-          }
-
+          })
           first = false;
         }
 
@@ -1031,7 +1075,7 @@
             removeMessage(textData);
           }
         }
-        
+
         lastChecked = timer;
       }
     }, 300);
