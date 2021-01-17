@@ -393,7 +393,7 @@
         }
 
         #chat-container #chat-history-container {
-          height: calc(100% - ${chatMessageVerticalPadding * 2 + avatarSize + avatarPadding * 2 + avatarBorder * 2 + chatVericalMargin * 2 + presenceIndicatorHeight}px);
+          height: calc(100% - ${chatMessageVerticalPadding * 2 + avatarSize + avatarPadding * 2 + avatarBorder * 2 + 30 + chatVericalMargin * 2 + presenceIndicatorHeight}px);
           position: relative;
         }
 
@@ -493,7 +493,7 @@
           height: ${avatarSize + avatarPadding * 2 + avatarBorder * 2 + chatMessageVerticalPadding * 2 - chatInputBorder * 2}px;
           line-height: ${avatarSize + avatarPadding * 2 + avatarBorder * 2}px;
           width: ${chatSidebarWidth - chatSidebarPadding * 2 - avatarSize - avatarPadding * 2 - avatarBorder * 2 - chatMessageHorizontalPadding - chatInputBorder}px;
-          
+
           background-color: #181A1E;
           border: none;
           outline-style: none;
@@ -514,7 +514,7 @@
           font-size:16px;
           font-weight:700;
           padding-right:10px;
-          
+
         }
         #chat-input{
           font-weight:400;
@@ -526,6 +526,13 @@
 
 
         }
+
+        #chat-title{
+          font-family: 'Nunito';
+          justify-content: center;
+          align-items: center;
+        }
+
         #chat-message-time{
           font-color:#4F4F4F;
           font-weight:500;
@@ -549,6 +556,7 @@
       </style>
      
       <div id="chat-container">
+        <h2 id="chat-title"> Netflix & Text </h2>
         <div id="chat-history-container">
           <div id="chat-history"></div>
         </div>
