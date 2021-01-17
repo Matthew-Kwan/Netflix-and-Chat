@@ -681,9 +681,9 @@
           <div class="chat-message-sender">Name</div>
           <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
         </div>
-        <div class="chat-message-body">${ details}</div> 
+        <div class="chat-message-body">${details}</div>
 
-      </div> 
+      </div>
       `;
 
       jQuery('#chat-history').append(finalized);
@@ -698,12 +698,12 @@
       var seconds = message[0];
       var details = message[1];
       var timer = getDurationFormat(seconds);
-      var specificMessage = '[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details;
+      // var specificMessage = '[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details;
 
       var history = document.getElementById("chat-history").getElementsByClassName("chat-message");
       for (var i = history.length - 1; i > -1; i--){
         var message = history[i].getElementsByClassName('chat-message-body')[0].innerHTML;
-        if (message === specificMessage){
+        if (message === details){
           history[i].remove()
           break;
         }
