@@ -367,6 +367,7 @@
 
     // this is the markup that needs to be injected onto the page for chat
     var chatHtml = `
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         .sizing-wrapper.with-chat {
           width: calc(100% - ${chatSidebarWidth}px) !important;
@@ -613,8 +614,8 @@
             }, 500);
           }
         });
-        
-        
+
+
         // receive messages from the server
         socket.on('sendMessage', function(data) {
           // this is only for one person, so you sent this message
@@ -698,13 +699,15 @@
 
       </div>
       `;
-UserName
       jQuery('#chat-history').append(finalized);
       jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
       unreadCount += 1;
       if (!document.hasFocus()) {
         document.title = '(' + String(unreadCount) + ') ' + originalTitle;
       }
+      var colors = ['#9FD8CB', '#9883E5', '#50C9CE', '#72A1E5', '#FCD3DE', '#E55381', '#C6D8FF', '#73AB84','#735290','#363457','#51CB20','#EF2D56', '#E9FF70'];
+      var random_color = colors[Math.floor(Math.random() * colors.length)];
+      jQuery('.chat-message-header div.chat-message-sender:last').css('color', random_color)
     };
 
     var removeMessage = function(message){
