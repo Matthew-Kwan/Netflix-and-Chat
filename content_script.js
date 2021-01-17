@@ -2,8 +2,8 @@
 
 (function() {
   // make sure the content script is only run once on the page
-  if (!window.netflixPartyLoaded) {
-    window.netflixPartyLoaded = true;
+  if (!window.netflixTextLoaded) {
+    window.netflixTextLoaded = true;
 
     //////////////////////////////////////////////////////////////////////////
     // Vendor libraries                                                     //

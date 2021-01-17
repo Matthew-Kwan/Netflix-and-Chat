@@ -13,7 +13,7 @@ class ShowSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
   class Meta:
     model = Message
-    fields = ['id', 'content', 'time', 'show']
+    fields = ['id', 'content', 'time', 'username', 'show']
 
   def create(self, validated_data):
     return Message.objects.create(**validated_data)

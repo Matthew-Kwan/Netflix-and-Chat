@@ -56,6 +56,7 @@ class MessageList(APIView):
     message = {
       'content': data['content'],
       'time': data['time'],
+      'username': data['username'],
       'show': data['unique_id']
     }
 
