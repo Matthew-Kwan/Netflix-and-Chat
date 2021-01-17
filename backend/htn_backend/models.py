@@ -19,6 +19,7 @@ class Message(models.Model):
   """ This model will contain data on each message """
   content = models.CharField(max_length=500)
   time = models.FloatField()
+  username = models.CharField(max_length=100)
   show = models.ForeignKey(Show, on_delete=models.CASCADE)
 
   def get_content(self):
