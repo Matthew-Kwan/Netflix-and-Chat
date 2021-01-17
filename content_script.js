@@ -362,13 +362,14 @@
 
     // this is the markup that needs to be injected onto the page for chat
     var chatHtml = `
-      <style>
+    <style>
         .sizing-wrapper.with-chat {
           width: calc(100% - ${chatSidebarWidth}px) !important;
         }
 
         #chat-container, #chat-container * {
           box-sizing: border-box;
+          background-color: #202328;
         }
 
         #chat-container {
@@ -383,7 +384,6 @@
           -webkit-user-select: text;
           z-index: 9999999999;
           padding: ${chatSidebarPadding}px;
-          background: black;
         }
 
         #chat-container #chat-history-container {
@@ -399,9 +399,9 @@
           max-height: 100%;
           overflow: auto;
         }
-
+        
         #chat-container #chat-history-container #chat-history .chat-message {
-          background-color: #222;
+          background-color: #202328;
           color: #999;
           padding: ${chatMessageVerticalPadding}px ${chatMessageHorizontalPadding}px;
           margin-top: ${chatVericalMargin}px;
@@ -424,9 +424,13 @@
           width: ${avatarSize}px;
           height: ${avatarSize}px;
         }
+        .chat-message-body {
+          font-size:16px;
+          font-family:"Nunito";
+          font-weight:300;
+        }
 
         #chat-container #chat-history-container #chat-history .chat-message .chat-message-body {
-          padding-left: ${avatarSize + avatarPadding * 2 + avatarBorder * 2 + chatMessageHorizontalPadding}px;
         }
 
         #chat-container #chat-history-container #chat-history .chat-message.system-message .chat-message-body {
@@ -451,11 +455,12 @@
           left: ${chatSidebarPadding}px;
           bottom: ${chatSidebarPadding}px;
           width: ${chatSidebarWidth - chatSidebarPadding * 2}px;
-          background-color: #111;
-          border: ${chatInputBorder}px solid #333;
-          border-radius: 2px;
+          background-color: #181A1E;
+          border-radius: 10px;
           overflow: auto;
           cursor: text;
+          font-size:16px;
+
         }
 
         #chat-container #chat-input-container #chat-input-avatar {
@@ -481,17 +486,31 @@
           height: ${avatarSize + avatarPadding * 2 + avatarBorder * 2 + chatMessageVerticalPadding * 2 - chatInputBorder * 2}px;
           line-height: ${avatarSize + avatarPadding * 2 + avatarBorder * 2}px;
           width: ${chatSidebarWidth - chatSidebarPadding * 2 - avatarSize - avatarPadding * 2 - avatarBorder * 2 - chatMessageHorizontalPadding - chatInputBorder}px;
-          margin-left: ${avatarSize + avatarPadding * 2 + avatarBorder * 2 + chatMessageHorizontalPadding - chatInputBorder}px;
-          background-color: #111;
+          
+          background-color: #181A1E;
           border: none;
           outline-style: none;
-          color: #999;
           padding-top: ${chatMessageVerticalPadding - chatInputBorder}px;
           padding-right: ${chatMessageHorizontalPadding - chatInputBorder}px;
           padding-bottom: ${chatMessageVerticalPadding - chatInputBorder}px;
           padding-left: ${chatMessageHorizontalPadding}px;
         }
+       
+        *{
+          font-family:'Nunito';
+        }
+        .chat-message-sender{
+          font-family:'Nunito';
+          color:Red;
+          font-size:16px;
+          font-weight:700
+        }
+        #chat-input{
+          font-weight:400;
+        }
+
       </style>
+     
       <div id="chat-container">
         <div id="chat-history-container">
           <div id="chat-history"></div>
@@ -617,7 +636,7 @@
       var timer = getDurationFormat(seconds)
       var finalized = `
       <div class="chat-message${''}">
-      <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
+    <div class="chat-message-sender">Name</div>
         <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
       </div> 
       `;
