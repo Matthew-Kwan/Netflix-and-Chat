@@ -109,8 +109,16 @@
     };
 
     // database
-    Array.prototype.insert = function ( index, item ) {
-      this.splice( index, 0, item );
+    var insertObject = function(original, item, insertAt) {
+      var newObject = [];
+      for (var i = 0; i < insertAt; i++){
+        newObject.push(original[i])
+      }
+      newObject.push(item)
+      for (var i = insertAt; i < original.length; i++){
+        newObject.push(original[i])
+      }
+      return newObject;
     };
     
     // Connecting to DB variables
@@ -553,17 +561,16 @@
           // this is only for one person, so you sent this message
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          var message = [timer, messageDetails];
-          //collectedData.insert(message, DBPointer);
-          addMessage(message);
-          //DBPointer++;
-          let messageObject = {
-            "content": messageDetails,
-            "time": timer,
-            "unique_id": videoId
+          if (messageDetails !== 'created the session'){
+            var message = [timer, messageDetails];
+            collectedData = insertObject(collectedData, message, DBPointer); // it'll show itself next ping
+            let messageObject = {
+              "content": messageDetails,
+              "time": timer,
+              "unique_id": videoId
+            }
+            postMessage(messageObject)
           }
-          postMessage(messageObject)
-
         });
 
         // receive presence updates from the server
@@ -1026,7 +1033,7 @@
       if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
 
-        if (first && videoId !== null){ // get request here
+        if (sessionId !== null && videoId !== null && document.getElementsByClassName("ellipsize-text").length > 0){ // get request here
           var element = document.getElementsByClassName("ellipsize-text")[0];
           var description;
           if (element.getElementsByTagName('h4').length > 0){
@@ -1057,7 +1064,13 @@
             if (textData[0] > timer){ // not ready to post yet
               DBPointer = i;
               break;
+
+            }else if (i == collectedData.length - 1){
+              DBPointer = collectedData.length;
+
             }
+
+            //textData[1] += " - The pointer is now set to " + DBPointer.toString() + " while we show message number " + i.toString();
             addMessage(textData);
           }
 
