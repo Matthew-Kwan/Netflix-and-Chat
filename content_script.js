@@ -1087,19 +1087,6 @@
       })
     }
 
-    const sortedData = function(data){
-      var newList = [];
-      for (var i = 0; data.length; i++) {
-        newList.push([data[i].fields.time, data[i].fields.content, data[i].fields.username])
-      }
-      
-      newList.sort(function(a, b){
-        return a[0] - b[0];
-      })
-
-      return newList;
-    }
-
     const getShow = async (ID) => {
 
       let data
@@ -1121,6 +1108,19 @@
         alert("HTTP-Error: " + response.status);
       }
       return data
+    }
+
+    const sortedData = function(data){
+      var newData = [];
+      for (var i = 0; i < data.length; i++) {
+        var newItem = [data[i].fields.time, data[i].fields.content, data[i].fields.username]
+        newData.push(newItem);
+      }
+      
+      newData.sort(function(a, b){
+        return a[0] - b[0];
+      })
+      return newData;
     }
 
     const clearAllMessages = function(){
@@ -1193,7 +1193,6 @@
 
             }else if (i == collectedData.length - 1){
               DBPointer = collectedData.length;
-
             }
 
             // textData[1] += " - The pointer is now set to " + DBPointer.toString() + " while we show message number " + i.toString();
@@ -1219,12 +1218,13 @@
       }
     }, 300);
 
-
+    
     setInterval(() =>{
       if (showName !== null){
         ID = badHashing(showName);
         dynamicChange(ID);
       }
     }, 3000)
+    
   }
 })();
