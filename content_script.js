@@ -1147,7 +1147,7 @@
       if (data) { // if HTTP-status is 200-299
         var newStuff = sortedData(data);
 
-        if (diff.length > collectedData.length) { // use new stuff
+        if (newStuff.length > collectedData.length) { // use new stuff
           clearAllMessages();
           collectedData = newStuff;
           lastChecked = -1;
