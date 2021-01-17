@@ -122,13 +122,22 @@
     };
 
     var badHashing = function(unique_str){
+      if (unique_str === null){
+        return '1';
+      }
+
       var total = 0;
       for (var i = 0; i < unique_str.length; i ++){
         total += unique_str.charCodeAt(i);
       }
+      
       return total;
     }
     
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+    var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+    var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
     // Connecting to DB variables
     var url = "https://HTNBE.noornasri1.repl.co/"
     var collectedData = [];
@@ -561,6 +570,10 @@
           <div id="chat-history"></div>
         </div>
         <div id="presence-indicator">People are typing...</div>
+        <form name="Voice Rec">
+            <input type="checkbox" name="Voice Rec" defaultValue = false id="Voice Rec">
+            <label for="Voice Rec">Voice Recognition</label>
+          </form>
         <div id="chat-input-container">
           <input placeholder="Comment"id="chat-input"></input>
         </div>
@@ -1060,6 +1073,7 @@
             showName = null;
             clearAllMessages();
             collectedData = [];
+            listeningToSpeech = false;
           });
           return true;
         }
@@ -1160,6 +1174,7 @@
       return data
     }
 
+    var listeningToSpeech = false;
     setInterval(() => {
       if (sessionId !== null){
         var timer = getDuration()
@@ -1218,6 +1233,21 @@
             removeMessage(textData);
           }
         }
+        
+        // speech recognition
+        var toggle = document.getElementById('Voice Rec');
+        if (toggle !== null){
+          if (toggle.checked  !== listeningToSpeech){
+            listeningToSpeech = toggle.checked ;
+            if (listeningToSpeech === true){
+              addMessage([0, "Voice Recognition Activated", "System Message [Private]"]);
+              eternalListener();
+            }else{
+              addMessage([0, "Voice Recognition Deactivated", "System Message [Private]"]);
+              listeningToSpeech = false;
+            }
+          }
+        }
 
         lastChecked = timer;
       }
@@ -1231,5 +1261,53 @@
       }
     }, 3000)
     
+    // speech recognition
+    var eternalListener = function(){
+      var colors = [ 'aqua' , 'azure' , 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral'];
+      var grammar = '#JSGF V1.0; grammar colors; public <color> = ' + colors.join(' | ') + ' ;'
+
+      var recognition = new SpeechRecognition();
+      var speechRecognitionList = new SpeechGrammarList();
+      speechRecognitionList.addFromString(grammar, 1);
+
+      recognition.start();
+      recognition.onresult = function(event) {
+        var color = event.results[0][0].transcript;
+        if (listeningToSpeech){
+          //addMessage([0, color + event.results[0][0].confidence.toString(), "System detect"]);
+          socket.emit('sendMessage', {
+            body: color
+          }, function() {
+            jQuery('#chat-input').val('').prop('disabled', false).focus();
+          });
+        }
+        recognition.stop();
+      }
+
+      recognition.onspeechend = function() {
+        recognition.stop();
+        if (listeningToSpeech){
+          eternalListener();
+        }
+      }
+
+      recognition.onnomatch = function(event) {
+        recognition.stop();
+        if (listeningToSpeech){
+          addMessage([getDuration(), "We could not understand what you said, please try again", "System Message [Private]"]);
+          eternalListener();
+        }
+      }
+
+      recognition.onerror = function(event) {
+        recognition.stop();
+        if (listeningToSpeech){
+          if (event.error !== "no-speech"){
+            addMessage([getDuration(), event.error + " occured, please try speaking again", "System Message [Private]"]);
+          }
+          eternalListener();
+        }
+      }
+    }
   }
 })();
