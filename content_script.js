@@ -109,7 +109,7 @@
     };
 
     // database
-    var insertObject = function (original, item, insertAt) {
+    var insertObject = function(original, item, insertAt) {
       var newObject = [];
       for (var i = 0; i < insertAt; i++){
         newObject.push(original[i])
@@ -585,10 +585,10 @@
           // this is only for one person, so you sent this message
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          var message = [timer, messageDetails];
-          //collectedData = insertObject(collectedData, message, DBPointer);
-          addMessage(message);
-          //DBPointer++;
+          if (messageDetails !== 'created the session'){
+            var message = [timer, messageDetails];
+            collectedData = insertObject(collectedData, message, DBPointer); // it'll show itself next ping
+          }
         });
 
         // receive presence updates from the server
@@ -1006,7 +1006,7 @@
 
     var lastChecked = -1;
     setInterval(() => {
-      if (sessionId !== null && messages.length > 0){
+      if (sessionId !== null && videoId !== null){
         var timer = getDuration()
         /*
         if (first && videoId !== null){ // get request here
@@ -1025,14 +1025,19 @@
         }
         */
 
-
-        if (timer > lastChecked){ // add new messages
+        if (timer >= lastChecked){ // add new messages
           for (var i = DBPointer; i < collectedData.length; i++){
             var textData = collectedData[i];
             if (textData[0] > timer){ // not ready to post yet
               DBPointer = i;
               break;
+
+            }else if (i == collectedData.length - 1){
+              DBPointer = collectedData.length;
+
             }
+
+            //textData[1] += " - The pointer is now set to " + DBPointer.toString() + " while we show message number " + i.toString();
             addMessage(textData);
           }
 
