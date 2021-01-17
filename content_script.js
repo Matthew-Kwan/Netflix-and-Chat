@@ -109,13 +109,26 @@
     };
 
     // database
-    Array.prototype.insert = function ( index, item ) {
-      this.splice( index, 0, item );
+    var insertObject = function (original, item, insertAt) {
+      var newObject = [];
+      for (var i = 0; i < insertAt; i++){
+        newObject.push(original[i])
+      }
+      newObject.push(item)
+      for (var i = insertAt; i < original.length; i++){
+        newObject.push(original[i])
+      }
+      return newObject;
     };
     
     // Connecting to DB variables
     var url = "localhost"
-    var collectedData = []
+    var collectedData = [
+      [180, "We are 3 MINUTES IN BABY"],
+      [600, "We are 10 MINUTES IN WOOOHOOO"],
+      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
+    ];
+
     var DBPointer = 0;
     var first = true;
 
@@ -547,14 +560,14 @@
           }
         });
         jQuery('#chat-input-avatar').html(`<img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" />`);
-
+        
         // receive messages from the server
         socket.on('sendMessage', function(data) {
           // this is only for one person, so you sent this message
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           var message = [timer, messageDetails];
-          //collectedData.insert(message, DBPointer);
+          //collectedData = insertObject(collectedData, message, DBPointer);
           addMessage(message);
           //DBPointer++;
         });
@@ -976,7 +989,7 @@
     setInterval(() => {
       if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
-        
+        /*
         if (first && videoId !== null){ // get request here
           var element = document.getElementsByClassName("ellipsize-text")[0];
           var description;
@@ -989,22 +1002,9 @@
           }
 
           var ID = videoId.toString();
-          let response = await fetch(url + "/api/shows/" + ID);
-
-          if (response.ok) { // if HTTP-status is 200-299
-            // get the response body (the method explained below)
-            let json = await response.json();
-            var item = json[i][''];
-            
-            for (var i = 0; json.length; i++){
-              collectedData.push([])
-            }
-          } else {
-            alert("HTTP-Error: " + response.status);
-          }
-
           first = false;
         }
+        */
 
 
         if (timer > lastChecked){ // add new messages
