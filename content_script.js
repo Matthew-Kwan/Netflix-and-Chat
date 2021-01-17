@@ -611,7 +611,7 @@
           // this is only for one person, so you sent this message
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          if (messageDetails !== 'created the session'){
+          if (messageDetails !== 'created the session' && messageDetails !== 'left'){
             var message = [timer, messageDetails, UserName];
             collectedData = insertObject(collectedData, message, DBPointer); // it'll show itself next ping
             let messageObject = {
