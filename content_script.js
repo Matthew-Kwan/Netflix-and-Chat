@@ -402,7 +402,7 @@
         }
 
         #chat-container #chat-history-container {
-          height: calc(100% - ${chatMessageVerticalPadding * 2 + avatarSize + avatarPadding * 2 + avatarBorder * 2 + 30 + chatVericalMargin * 2 + presenceIndicatorHeight}px);
+          height: calc(100% - ${chatMessageVerticalPadding * 2 + avatarSize + avatarPadding * 2 + avatarBorder * 2 + 60 + chatVericalMargin * 2 + presenceIndicatorHeight}px);
           position: relative;
         }
 
@@ -513,6 +513,7 @@
         }
         #chat-input-container{
           padding-left:15px;
+          margin-bottom:30px;
         }
         *{
           font-family:'Nunito';
@@ -554,33 +555,38 @@
 
         /* Track */
         ::-webkit-scrollbar-track {
-          background: #202328; 
+          background: #202328;
         }
-        
+
         /* Handle */
         ::-webkit-scrollbar-thumb {
-          background: #888; 
+          background: #888;
+        }
+
+        #voice {
+          margin-top:65px;
+          padding-right: ${chatMessageHorizontalPadding - chatInputBorder}px;
+          padding-left: ${chatMessageHorizontalPadding - chatInputBorder}px;
         }
 
       </style>
-     
+
       <div id="chat-container">
-        <h2 id="chat-title"> Netflix & Text </h2>
+        <h2 id="chat-title"> Netflix & Chat </h2>
         <div id="chat-history-container">
           <div id="chat-history"></div>
         </div>
         <div id="presence-indicator">People are typing...</div>
-        <form name="Voice Rec">
-            <input type="checkbox" name="Voice Rec" defaultValue = false id="Voice Rec">
-            <label for="Voice Rec">Voice Recognition</label>
-          </form>
         <div id="chat-input-container">
           <input placeholder="Comment"id="chat-input"></input>
         </div>
+        <form id="voice" name="Voice Rec">
+          <input type="checkbox" name="Voice Rec" defaultValue = false id="Voice Rec">
+          <label for="Voice Rec">Enable Voice Recognition</label>
+        </form>
       </div>
     `;
-    
-      
+
     // this is used for the chat presence feature
     var typingTimer = null;
 
@@ -1233,7 +1239,7 @@
             removeMessage(textData);
           }
         }
-        
+
         // speech recognition
         var toggle = document.getElementById('Voice Rec');
         if (toggle !== null){
@@ -1260,7 +1266,7 @@
         dynamicChange(ID);
       }
     }, 3000)
-    
+
     // speech recognition
     var eternalListener = function(){
       var colors = [ 'aqua' , 'azure' , 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral'];
