@@ -402,7 +402,7 @@
         
         #chat-container #chat-history-container #chat-history .chat-message {
           background-color: #202328;
-          color: #999;
+          
           padding: ${chatMessageVerticalPadding}px ${chatMessageHorizontalPadding}px;
           margin-top: ${chatVericalMargin}px;
           border-radius: 2px;
@@ -428,6 +428,7 @@
           font-size:16px;
           font-family:"Nunito";
           font-weight:300;
+          color: #F2F2F2;
         }
 
         #chat-container #chat-history-container #chat-history .chat-message .chat-message-body {
@@ -495,7 +496,9 @@
           padding-bottom: ${chatMessageVerticalPadding - chatInputBorder}px;
           padding-left: ${chatMessageHorizontalPadding}px;
         }
-       
+        #chat-input-container{
+          padding-left:15px;
+        }
         *{
           font-family:'Nunito';
         }
@@ -503,10 +506,38 @@
           font-family:'Nunito';
           color:Red;
           font-size:16px;
-          font-weight:700
+          font-weight:700;
+          padding-right:10px;
+          
         }
         #chat-input{
           font-weight:400;
+        }
+        .med-gray{
+          color:#4F4F4F;
+          font-weight:600;
+          font-size:16px;
+
+
+        }
+        #chat-message-time{
+          font-color:#4F4F4F;
+          font-weight:500;
+          font-size:16px;
+        }
+        .chat-message-header{
+          display:flex;
+          margin-bottom:5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #202328; 
+        }
+        
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888; 
         }
 
       </style>
@@ -517,8 +548,7 @@
         </div>
         <div id="presence-indicator">People are typing...</div>
         <div id="chat-input-container">
-          <div id="chat-input-avatar"></div>
-          <input id="chat-input"></input>
+          <input placeholder="Comment"id="chat-input"></input>
         </div>
       </div>
     `;
@@ -578,7 +608,7 @@
             }, 500);
           }
         });
-        jQuery('#chat-input-avatar').html(`<img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" />`);
+        
         
         // receive messages from the server
         socket.on('sendMessage', function(data) {
@@ -636,8 +666,12 @@
       var timer = getDurationFormat(seconds)
       var finalized = `
       <div class="chat-message${''}">
-    <div class="chat-message-sender">Name</div>
-        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div> 
+        <div class="chat-message-header">
+          <div class="chat-message-sender">Name</div>
+          <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
+        </div>
+        <div class="chat-message-body">${ details}</div> 
+
       </div> 
       `;
 
