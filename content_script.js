@@ -486,7 +486,7 @@
           padding: ${avatarPadding}px;
           border: ${avatarBorder}px solid #333;
           margin-left: ${chatMessageHorizontalPadding - chatInputBorder}px;
-          margin-top: ${chatMessageVerticalPadding - chatInputBorder}px;
+          margin-top: ${chatMessageVerticalPadding}px;
           margin-bottom: ${chatMessageVerticalPadding - chatInputBorder}px;
           border-radius: 2px;
         }
@@ -513,7 +513,7 @@
         }
         #chat-input-container{
           padding-left:15px;
-          margin-bottom:30px;
+          margin-bottom:40px;
         }
         *{
           font-family:'Nunito';
@@ -562,8 +562,52 @@
         ::-webkit-scrollbar-thumb {
           background: #888;
         }
+        
+          input[type="checkbox"]{
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          -webkit-tap-highlight-color: transparent;
+          cursor: pointer;}
+          
+          toggle::focus{
+            outline: 0;}
 
+          .toggle{
+
+            height: 26px;
+            width: 46px;
+            border-radius: 16px;
+            display: inline-block;
+            position: relative;
+            margin-right:5px;
+            border: 2px solid #474755;
+            background: linear-gradient(180deg, #2D2F39 0%, #1F2027 100%);
+            transition: all .2s ease;}
+
+          .toggle::after{
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 2px rgba(44,44,44,.2);
+            transition: all .2s cubic-bezier(.5,.1,.75,1.35);
+          }
+
+          .toggle:checked{
+            border-color: #00AC83;
+          }
+
+    .toggle:checked::after{
+      transform: translatex(20px);
+        }
         #voice {
+          display:flex;
+          align-items:center;
           margin-top:65px;
           padding-right: ${chatMessageHorizontalPadding - chatInputBorder}px;
           padding-left: ${chatMessageHorizontalPadding - chatInputBorder}px;
@@ -581,8 +625,9 @@
           <input placeholder="Comment"id="chat-input"></input>
         </div>
         <form id="voice" name="Voice Rec">
-          <input type="checkbox" name="Voice Rec" defaultValue = false id="Voice Rec">
-          <label for="Voice Rec">Enable Voice Recognition</label>
+          <input type="checkbox" class='toggle' name="Voice Rec" defaultValue = false id="Voice Rec">
+          <p>Enable Speech to Text</p>
+          
         </form>
       </div>
     `;
