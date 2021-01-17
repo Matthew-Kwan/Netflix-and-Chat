@@ -114,27 +114,10 @@
     };
     
     // Connecting to DB variables
-    var collectedData = [
-      [180, "We are 3 MINUTES IN BABY"],
-      [600, "We are 10 MINUTES IN WOOOHOOO"],
-      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
-    ]
-
+    var url = "localhost"
+    var collectedData = []
     var DBPointer = 0;
-    /*
-        if (first && videoId !== null){
-          var element = document.getElementsByClassName("ellipsize-text")[0];
-          if (element.getElementsByTagName('h4').length > 0){
-            var title = element.getElementsByTagName('h4')[0].innerHTML;
-            var ep = element.getElementsByTagName('span')[0].innerHTML;
-            addMessage([timer, title + ", " + ep + " unique ID " + videoId.toString()]);
-          }else{ // movie
-            addMessage([timer, element.innerHTML + " unique ID " + videoId.toString()]);
-          }
-          first = false;
-        }
-
-        */
+    var first = true;
 
     //////////////////////////////////////////////////////////////////////////
     // Netflix API                                                          //
@@ -571,9 +554,9 @@
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           var message = [timer, messageDetails];
-          collectedData.insert(message, DBPointer);
+          //collectedData.insert(message, DBPointer);
           addMessage(message);
-          DBPointer++;
+          //DBPointer++;
         });
 
         // receive presence updates from the server
@@ -612,8 +595,6 @@
         jQuery('#presence-indicator').hide();
       }
     };
-    
-    
 
     // add a message to the chat history
     var addMessage = function(message) {
@@ -972,6 +953,7 @@
             sessionId = null;
             setChatVisible(false);
             sendResponse({});
+            first = true;
             DBPointer = 0;
             lastChecked = -1;
           });
@@ -994,6 +976,36 @@
     setInterval(() => {
       if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
+        
+        if (first && videoId !== null){ // get request here
+          var element = document.getElementsByClassName("ellipsize-text")[0];
+          var description;
+          if (element.getElementsByTagName('h4').length > 0){
+            var title = element.getElementsByTagName('h4')[0].innerHTML;
+            var ep = element.getElementsByTagName('span')[0].innerHTML;
+            description =  title + ", " + ep;
+          }else{ // movie
+            description =  element.innerHTML;
+          }
+
+          var ID = videoId.toString();
+          let response = await fetch(url + "/api/shows/" + ID);
+
+          if (response.ok) { // if HTTP-status is 200-299
+            // get the response body (the method explained below)
+            let json = await response.json();
+            var item = json[i][''];
+            
+            for (var i = 0; json.length; i++){
+              collectedData.push([])
+            }
+          } else {
+            alert("HTTP-Error: " + response.status);
+          }
+
+          first = false;
+        }
+
 
         if (timer > lastChecked){ // add new messages
           for (var i = DBPointer; i < collectedData.length; i++){
