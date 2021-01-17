@@ -603,13 +603,8 @@
             }, 500);
           }
         });
-<<<<<<< HEAD
         
         
-=======
-        jQuery('#chat-input-avatar').html(`<img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" />`);
-
->>>>>>> 828d2f5f06737c3009922b2607e79cfc3696dbe8
         // receive messages from the server
         socket.on('sendMessage', function(data) {
           // this is only for one person, so you sent this message
@@ -682,7 +677,6 @@
       var timer = getDurationFormat(seconds)
       var finalized = `
       <div class="chat-message${''}">
-<<<<<<< HEAD
         <div class="chat-message-header">
           <div class="chat-message-sender">Name</div>
           <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
@@ -690,11 +684,6 @@
         <div class="chat-message-body">${ details}</div> 
 
       </div> 
-=======
-      <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
-        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div>
-      </div>
->>>>>>> 828d2f5f06737c3009922b2607e79cfc3696dbe8
       `;
 
       jQuery('#chat-history').append(finalized);
