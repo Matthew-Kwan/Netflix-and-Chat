@@ -120,12 +120,21 @@
       }
       return newObject;
     };
+
+    var badHashing = function(unique_str){
+      var newString = "";
+      for (var i = 0; i < unique_str.length; i ++){
+        newString += unique_str.charAt(i);
+      }
+      return parseInt(newString);
+    }
     
     // Connecting to DB variables
-    var url = "http://localhost:8000/"
+    var url = "https://HTNBE.noornasri1.repl.co/"
     var collectedData = [];
     var DBPointer = 0;
     var first = true;
+    var showName;
     var UserName;
 
     //////////////////////////////////////////////////////////////////////////
@@ -618,7 +627,7 @@
               "content": messageDetails,
               "time": timer,
               "username" : UserName,
-              "unique_id": videoId
+              "unique_id": badHashing(showName)
             }
             postMessage(messageObject)
           }
@@ -1102,12 +1111,13 @@ UserName
           }else{ // movie
             description =  element.innerHTML;
           }
-
-          var ID = videoId;
+          
+          showName = description;
+          ID = badHashing(showName)
           getShow(ID).then(data => {
             if(data === "err") {
               newShow = {
-                "unique_id": ID,
+                "unique_id": ID, 
                 "description": description
               }
               postShow(newShow)
