@@ -122,13 +122,8 @@
     };
     
     // Connecting to DB variables
-    var url = "localhost"
-    var collectedData = [
-      [180, "We are 3 MINUTES IN BABY"],
-      [600, "We are 10 MINUTES IN WOOOHOOO"],
-      [1000, "THATS WHAT WE'VE BEEN WAITING FOR WOOOOHOOO"]
-    ];
-
+    var url = "http://localhost:8000/"
+    var collectedData = []
     var DBPointer = 0;
     var first = true;
 
@@ -608,8 +603,13 @@
             }, 500);
           }
         });
+<<<<<<< HEAD
         
         
+=======
+        jQuery('#chat-input-avatar').html(`<img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" />`);
+
+>>>>>>> 828d2f5f06737c3009922b2607e79cfc3696dbe8
         // receive messages from the server
         socket.on('sendMessage', function(data) {
           // this is only for one person, so you sent this message
@@ -618,6 +618,12 @@
           if (messageDetails !== 'created the session'){
             var message = [timer, messageDetails];
             collectedData = insertObject(collectedData, message, DBPointer); // it'll show itself next ping
+            let messageObject = {
+              "content": messageDetails,
+              "time": timer,
+              "unique_id": videoId
+            }
+            postMessage(messageObject)
           }
         });
 
@@ -629,6 +635,16 @@
         jQuery('#chat-history').html('');
       }
     };
+
+    const postMessage = async (data) => {
+      const response = await fetch(`${url}api/messages/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+    }
 
     // query whether the chat sidebar is visible
     var getChatVisible = function() {
@@ -666,6 +682,7 @@
       var timer = getDurationFormat(seconds)
       var finalized = `
       <div class="chat-message${''}">
+<<<<<<< HEAD
         <div class="chat-message-header">
           <div class="chat-message-sender">Name</div>
           <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
@@ -673,6 +690,11 @@
         <div class="chat-message-body">${ details}</div> 
 
       </div> 
+=======
+      <div class="chat-message-avatar"><img src="data:image/png;base64,${new Identicon(Sha256.hash(userId).substr(0, 32), avatarSize * 2, 0).toString()}" /></div>
+        <div class="chat-message-body">${'[' + timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString() + '] ' + details}</div>
+      </div>
+>>>>>>> 828d2f5f06737c3009922b2607e79cfc3696dbe8
       `;
 
       jQuery('#chat-history').append(finalized);
@@ -681,8 +703,6 @@
       if (!document.hasFocus()) {
         document.title = '(' + String(unreadCount) + ') ' + originalTitle;
       }
-
-      
     };
 
     var removeMessage = function(message){
@@ -1036,14 +1056,48 @@
         }
       }
     );
-    
 
     var lastChecked = -1;
+
+    const postShow = async (data) => {
+      const response = await fetch(`${url}api/shows/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+    }
+
+    const getShow = async (ID) => {
+
+      let data
+
+      try {
+        const response = await fetch(`${url}api/shows/${ID}`)
+        data =  await response.json()
+        if(data.detail) {
+          throw('no data')
+        }
+      } catch (err) {
+          return "err"
+      }
+
+      if (data) { // if HTTP-status is 200-299
+        for (var i = 0; data.length; i++) {
+          collectedData.push([data[i].fields.time, data[i].fields.content])
+        }
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+      return data
+    }
+
     setInterval(() => {
-      if (sessionId !== null && videoId !== null){
+      if (sessionId !== null && messages.length > 0){
         var timer = getDuration()
-        /*
-        if (first && videoId !== null){ // get request here
+
+        if (sessionId !== null && videoId !== null && document.getElementsByClassName("ellipsize-text").length > 0){ // get request here
           var element = document.getElementsByClassName("ellipsize-text")[0];
           var description;
           if (element.getElementsByTagName('h4').length > 0){
@@ -1054,12 +1108,21 @@
             description =  element.innerHTML;
           }
 
-          var ID = videoId.toString();
+          var ID = videoId;
+          getShow(ID).then(data => {
+            if(data === "err") {
+              newShow = {
+                "unique_id": ID,
+                "description": description
+              }
+              postShow(newShow)
+            }
+          })
           first = false;
         }
-        */
 
-        if (timer >= lastChecked){ // add new messages
+
+        if (timer > lastChecked){ // add new messages
           for (var i = DBPointer; i < collectedData.length; i++){
             var textData = collectedData[i];
             if (textData[0] > timer){ // not ready to post yet
@@ -1089,7 +1152,7 @@
             removeMessage(textData);
           }
         }
-        
+
         lastChecked = timer;
       }
     }, 300);
