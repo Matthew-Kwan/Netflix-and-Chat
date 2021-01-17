@@ -1083,10 +1083,10 @@
     }
 
     setInterval(() => {
-      if (sessionId !== null && messages.length > 0){
+      if (sessionId !== null){
         var timer = getDuration()
 
-        if (sessionId !== null && videoId !== null && document.getElementsByClassName("ellipsize-text").length > 0){ // get request here
+        if (first && sessionId !== null && videoId !== null && document.getElementsByClassName("ellipsize-text").length > 0){ // get request here
           var element = document.getElementsByClassName("ellipsize-text")[0];
           var description;
           if (element.getElementsByTagName('h4').length > 0){
@@ -1110,8 +1110,7 @@
           first = false;
         }
 
-
-        if (timer > lastChecked){ // add new messages
+        if (timer >= lastChecked){ // add new messages
           for (var i = DBPointer; i < collectedData.length; i++){
             var textData = collectedData[i];
             if (textData[0] > timer){ // not ready to post yet
@@ -1123,7 +1122,7 @@
 
             }
 
-            //textData[1] += " - The pointer is now set to " + DBPointer.toString() + " while we show message number " + i.toString();
+            // textData[1] += " - The pointer is now set to " + DBPointer.toString() + " while we show message number " + i.toString();
             addMessage(textData);
           }
 
