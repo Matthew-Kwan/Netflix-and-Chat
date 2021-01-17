@@ -121,6 +121,15 @@
       return newObject;
     };
 
+    var pad = function(number, length) {
+      var str = '' + number;
+      while (str.length < length) {
+          str = '0' + str;
+      }
+      return str;
+  
+  }
+
     var badHashing = function(unique_str){
       if (unique_str === undefined){
         return '1';
@@ -720,7 +729,7 @@
       <div class="chat-message${''}">
         <div class="chat-message-header">
           <div class="chat-message-sender">${username}</div>
-          <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
+          <div class='med-gray' id="chat-message-time ">${pad(timer[0].toString(), 2) + ":" + pad(timer[1].toString(), 2) + ":" + pad(timer[2].toString(), 2)}</div>
         </div>
         <div class="chat-message-body">${details}</div>
 
