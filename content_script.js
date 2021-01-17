@@ -987,24 +987,8 @@
 
     var lastChecked = -1;
     setInterval(() => {
-      if (sessionId !== null && videoId !== null){
-        var timer = getDuration()
-        /*
-        if (first && videoId !== null){ // get request here
-          var element = document.getElementsByClassName("ellipsize-text")[0];
-          var description;
-          if (element.getElementsByTagName('h4').length > 0){
-            var title = element.getElementsByTagName('h4')[0].innerHTML;
-            var ep = element.getElementsByTagName('span')[0].innerHTML;
-            description =  title + ", " + ep;
-          }else{ // movie
-            description =  element.innerHTML;
-          }
-
-          var ID = videoId.toString();
-          first = false;
-        }
-        */
+      if (sessionId !== null && videoId !== null && document.getElementsByClassName("ellipsize-text").length > 0){
+        var timer = getDuration();
 
         if (timer >= lastChecked){ // add new messages
           for (var i = DBPointer; i < collectedData.length; i++){
