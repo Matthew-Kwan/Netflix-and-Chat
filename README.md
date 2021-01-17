@@ -3,6 +3,15 @@
 # Introduction
 Netflix and Chat is a Chrome Extension for Netflix which provides additional functionality to your Netflix viewing experience. With Netflix & Chat, we provide users the ability to share their thoughts and comments on their favorite movies/tv-shows and read what others had to say about a certain scene. We hope that our extension provides a greater sense of community as we find ourselves increasingly isolated through the current pandemic. 
 
+## Setup Instructions
+
+1. Clone the repository
+2. Go to `chrome://extensions/`
+3. Enable developer tools on the top right and click 'Load Unpacked' on the top left
+4. Select the repository root directory and load it in
+
+You should now see the extension in your chrome! Navigate to any Netflix video and view the comments from before. For an example of an episode with existing comments, go to "The Office" season 1 episode 1, "The Pilot".
+
 ## How We Built It. 
 Lots and lots of JavaScript - also Python. We didn't use any of the category APIs (although we really wanted to, we just didn't end up needing them except for the app, which was not completed), and so everything was done from scratch!
 
