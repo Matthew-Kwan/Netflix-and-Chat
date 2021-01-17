@@ -122,7 +122,7 @@
     };
 
     var badHashing = function(unique_str){
-      if (unique_str === null){
+      if (unique_str === undefined){
         return '1';
       }
 
@@ -130,7 +130,7 @@
       for (var i = 0; i < unique_str.length; i ++){
         total += unique_str.charCodeAt(i);
       }
-      
+
       return total;
     }
     
