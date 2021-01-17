@@ -1046,6 +1046,9 @@ UserName
             first = true;
             DBPointer = 0;
             lastChecked = -1;
+            showName = null;
+            clearAllMessages();
+            collectedData = [];
           });
           return true;
         }
@@ -1073,6 +1076,19 @@ UserName
       })
     }
 
+    const sortedData = function(data){
+      var newList = [];
+      for (var i = 0; data.length; i++) {
+        newList.push([data[i].fields.time, data[i].fields.content, data[i].fields.username])
+      }
+      
+      newList.sort(function(a, b){
+        return a[0] - b[0];
+      })
+
+      return newList;
+    }
+
     const getShow = async (ID) => {
 
       let data
@@ -1088,13 +1104,44 @@ UserName
       }
 
       if (data) { // if HTTP-status is 200-299
-        for (var i = 0; data.length; i++) {
-          collectedData.push([data[i].fields.time, data[i].fields.content, data[i].fields.username])
-        }
+        collectedData = sortedData(data);
+
       } else {
         alert("HTTP-Error: " + response.status);
       }
       return data
+    }
+
+    const clearAllMessages = function(){
+      messages = []
+      var hist = document.getElementById("chat-history");
+      while (hist.lastChild){
+        hist.removeChild(hist.lastChild);
+      }
+    }
+
+    const dynamicChange = async(ID) => {
+      const response = await fetch(`${url}api/shows/${ID}`)
+      data =  await response.json()
+
+      if (data.detail === null){ // loaded in without error
+        var newStuff = sortedData(data);
+        var diff = false;
+
+        for (var i = 0; newStuff.length; i++) {
+          if (newStuff[i][1] !== collectedData[i][1]){
+            diff = true;
+            break;
+          }
+        }
+
+        if (diff) { // use new stuff
+          clearAllMessages();
+          collectedData = newStuff;
+          lastChecked = -1;
+          DBPointer = 0;
+        }
+      }
     }
 
     setInterval(() => {
@@ -1160,5 +1207,13 @@ UserName
         lastChecked = timer;
       }
     }, 300);
+
+
+    setInterval(() =>{
+      if (showName !== null){
+        ID = badHashing(showName);
+        dynamicChange(ID);
+      }
+    }, 3000)
   }
 })();
