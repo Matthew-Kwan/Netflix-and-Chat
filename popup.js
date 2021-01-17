@@ -111,9 +111,11 @@ $(function() {
 
         // listen for clicks on the "Create session" button
         $('#create-session').click(function() {
+          var userName = document.getElementById('Username').getAttribute('value');
           sendMessage('createSession', {
             controlLock: $('#control-lock').is(':checked'),
-            videoId: videoId
+            videoId: videoId,
+            username: userName
           }, function(response) {
             showConnected(response.sessionId);
           });

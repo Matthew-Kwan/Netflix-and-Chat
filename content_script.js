@@ -123,9 +123,10 @@
     
     // Connecting to DB variables
     var url = "http://localhost:8000/"
-    var collectedData = []
+    var collectedData = [];
     var DBPointer = 0;
     var first = true;
+    var UserName;
 
     //////////////////////////////////////////////////////////////////////////
     // Netflix API                                                          //
@@ -611,11 +612,12 @@
           var timer = getDuration();
           var messageDetails = data.body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           if (messageDetails !== 'created the session'){
-            var message = [timer, messageDetails];
+            var message = [timer, messageDetails, UserName];
             collectedData = insertObject(collectedData, message, DBPointer); // it'll show itself next ping
             let messageObject = {
               "content": messageDetails,
               "time": timer,
+              "username" : UserName,
               "unique_id": videoId
             }
             postMessage(messageObject)
@@ -674,18 +676,20 @@
       messages.push(message);
       var seconds = message[0]
       var details = message[1]
+      var username = message[2]
+
       var timer = getDurationFormat(seconds)
       var finalized = `
       <div class="chat-message${''}">
         <div class="chat-message-header">
-          <div class="chat-message-sender">Name</div>
+          <div class="chat-message-sender">${username}</div>
           <div class='med-gray' id="chat-message-time ">${ timer[0].toString() + ":" + timer[1].toString() + ":" + timer[2].toString()}</div>
         </div>
         <div class="chat-message-body">${details}</div>
 
       </div>
       `;
-
+UserName
       jQuery('#chat-history').append(finalized);
       jQuery('#chat-history').scrollTop(jQuery('#chat-history').prop('scrollHeight'));
       unreadCount += 1;
@@ -966,6 +970,8 @@
         }
 
         if (request.type === 'createSession') {
+          UserName = request.data.username
+
           socket.emit('createSession', {
             controlLock: request.data.controlLock,
             videoId: request.data.videoId
@@ -1074,7 +1080,7 @@
 
       if (data) { // if HTTP-status is 200-299
         for (var i = 0; data.length; i++) {
-          collectedData.push([data[i].fields.time, data[i].fields.content])
+          collectedData.push([data[i].fields.time, data[i].fields.content, data[i].fields.username])
         }
       } else {
         alert("HTTP-Error: " + response.status);
