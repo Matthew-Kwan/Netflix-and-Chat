@@ -1124,10 +1124,19 @@
     }
 
     const dynamicChange = async(ID) => {
-      const response = await fetch(`${url}api/shows/${ID}`)
-      data =  await response.json()
+      let data
 
-      if (data.detail === null){ // loaded in without error
+      try {
+        const response = await fetch(`${url}api/shows/${ID}`)
+        data =  await response.json()
+        if(data.detail) {
+          throw('no data')
+        }
+      } catch (err) {
+          return "err"
+      }
+
+      if (data) { // if HTTP-status is 200-299
         var newStuff = sortedData(data);
         var diff = false;
 
@@ -1144,7 +1153,11 @@
           lastChecked = -1;
           DBPointer = 0;
         }
+
+      } else {
+        alert("HTTP-Error: " + response.status);
       }
+      return data
     }
 
     setInterval(() => {
