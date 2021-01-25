@@ -1,4 +1,6 @@
 # Netflix and Chat
+
+Demo video and other resources can be found here: https://devpost.com/software/netflix-and-text
  
 # Introduction
 Netflix and Chat is a Chrome Extension for Netflix which provides additional functionality to your Netflix viewing experience. With Netflix & Chat, we provide users the ability to share their thoughts and comments on their favorite movies/tv-shows and read what others had to say about a certain scene. We hope that our extension provides a greater sense of community as we find ourselves increasingly isolated through the current pandemic. 
